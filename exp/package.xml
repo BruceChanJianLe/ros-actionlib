@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>exp</name>
+  <version>0.0.0</version>
+  <description>The exp package</description>
+
+  <author email="jianle001@e.ntu.edu.sg">Bruce Chan Jian Le</author>
+  <maintainer email="jianle001@e.ntu.edu.sg">Bruce Chan Jian Le</maintainer>
+  <license>MIT</license>
+  <url type="website">https://github.com/BruceChanJianLe/ros-actionlib</url>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>actionlib</build_depend>
+  <build_depend>exp_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+
+  <build_export_depend>actionlib</build_export_depend>
+  <build_export_depend>exp_msgs</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>exp_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+
+
+  <export>
+  </export>
+</package>
