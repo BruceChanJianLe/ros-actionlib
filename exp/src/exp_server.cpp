@@ -83,6 +83,16 @@ namespace exp_server
                 }
                 r.sleep();
             }
+            else
+            {
+                ROS_INFO_STREAM(
+                    ros::this_node::getName() <<
+                    " server has been preempted."
+                );
+                // Set server as preempted
+                act_srv_->setPreempted();
+                return;
+            }
         }
 
         // Determine if service call was successful
