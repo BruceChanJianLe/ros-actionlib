@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+    <node pkg="exp" type="exp_server_node" name="exp_server_node" output="screen"/>
+
+</launch>
