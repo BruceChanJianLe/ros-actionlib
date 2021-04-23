@@ -41,6 +41,11 @@ namespace exp_server
 
     void exp_server::actionServerCB(const exp_msgs::ExpGoalConstPtr & goal)
     {
+        ROS_INFO_STREAM(
+            ros::this_node::getName() << " " << __func__ <<
+            " action server request has been received."
+        );
+
         geometry_msgs::PoseStamped begining_pose;
         begining_pose.pose.position.x = 0.0;
         begining_pose.pose.position.y = 0.0;
@@ -71,15 +76,20 @@ namespace exp_server
                 }
                 else
                 {
-                    if((int) goal->target_pose.pose.position.x == (int) begining_pose.pose.position.x)
+                    if((int) goal->target_pose.pose.position.x > (int) begining_pose.pose.position.x)
                         begining_pose.pose.position.x += 1.0;
-                    if((int) goal->target_pose.pose.position.y == (int) begining_pose.pose.position.y)
+                    if((int) goal->target_pose.pose.position.y > (int) begining_pose.pose.position.y)
                         begining_pose.pose.position.y += 1.0;
 
                     // Update feedback with current pose
                     feedback_.feedback.base_position = begining_pose;
 
                     act_srv_->publishFeedback(feedback_.feedback);
+                    ROS_INFO_STREAM(
+                        ros::this_node::getName() << " " << __func__ << 
+                        " current x pose: " << (int) begining_pose.pose.position.x << 
+                        " current y pose: " << (int) begining_pose.pose.position.y 
+                    );
                 }
                 r.sleep();
             }
