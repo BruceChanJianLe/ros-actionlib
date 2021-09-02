@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="name" value="exp_server_gui_node"/>
+  <!-- Launch node -->
+  <node name="$(arg name)" pkg="exp_server_gui" type="exp_server_gui" output="screen"/>
+
+</launch>
