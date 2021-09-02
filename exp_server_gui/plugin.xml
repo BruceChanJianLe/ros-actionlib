@@ -1,0 +1,22 @@
+<library path="lib/libexp_server_gui">
+    <!-- Note that the class name must be unique, else ROS would be able to find it -->
+    <!-- The class name also need to follow the "namespace/class_name" convention in order to work properly -->
+    <!-- Note that base_class_type changes according to cpp or py -->
+    <class name="exp_server/exp_server_gui" type="exp_server::exp_server_gui" base_class_type="rqt_gui_cpp::Plugin">
+        <description>
+            Exp server gui, this is to simulate actionlib server response for exp client to handle.
+        </description>
+        <qtgui>
+        <group>
+            <label>Topics</label>
+            <icon type="theme">folder</icon>
+            <statustip></statustip>
+        </group>
+        <label>Exp Server GUI</label>
+        <icon type="theme">applications-graphics</icon>
+        <!-- Reference Link -->
+        <!-- https://gist.github.com/peteristhegreat/c0ca6e1a57e5d4b9cd0bb1d7b3be1d6a -->
+        <statustip>Exp server gui, this is to simulate actionlib server response for exp client to handle.</statustip>
+        </qtgui>
+    </class>
+</library>
