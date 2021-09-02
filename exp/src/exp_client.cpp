@@ -39,7 +39,9 @@ namespace exp_client
             act_clt_->sendGoal(goal_);
 
             // Wait for result for a certain amount of time
-            if(act_clt_->waitForResult(ros::Duration(100.0)))
+            // if(act_clt_->waitForResult(ros::Duration(100.0)))
+            // Or wait for indefinited amount of time
+            if(act_clt_->waitForResult())
             {
                 actionlib::SimpleClientGoalState state = act_clt_->getState();
                 ROS_INFO_STREAM(
