@@ -43,11 +43,50 @@ namespace exp_client
             // Or wait for indefinited amount of time
             if(act_clt_->waitForResult())
             {
-                actionlib::SimpleClientGoalState state = act_clt_->getState();
-                ROS_INFO_STREAM(
-                    ros::this_node::getName() << 
-                    " Action finished: " << state.toString().c_str()
-                );
+                auto res = act_clt_->getState();
+                
+                // Handle server's state
+                switch (res.state_)
+                {
+                case actionlib::SimpleClientGoalState::PREEMPTED:
+                    ROS_INFO_STREAM(
+                        ros::this_node::getName()
+                        << " "
+                        << __func__
+                        << " server state is "
+                        << res.toString().c_str()
+                    );
+                    break;
+
+                case actionlib::SimpleClientGoalState::ABORTED:
+                    ROS_INFO_STREAM(
+                        ros::this_node::getName()
+                        << " "
+                        << __func__
+                        << " server state is "
+                        << res.toString().c_str()
+                    );
+                    break;
+
+                case actionlib::SimpleClientGoalState::SUCCEEDED:
+                    ROS_INFO_STREAM(
+                        ros::this_node::getName()
+                        << " "
+                        << __func__
+                        << " server state is "
+                        << res.toString().c_str()
+                    );
+                    break;
+
+                default:
+                    ROS_INFO_STREAM(
+                        ros::this_node::getName()
+                        << " "
+                        << __func__
+                        << " server default state!"
+                    );
+                    break;
+                };
             }
             else
             {
