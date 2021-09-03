@@ -97,7 +97,8 @@ namespace exp_server
             }
             else
             {
-                act_srv_->setPreempted();
+                state_ = exp_server::serverState::CANCEL;
+                ui_.current_status->setText("   CANCELLED BY CLIENT.");
                 break;
             }
             r.sleep();
@@ -132,6 +133,16 @@ namespace exp_server
                 << " "
                 << __func__
                 << " server responded with SUCCEEDED."
+            );
+            break;
+
+        case exp_server::serverState::CANCEL:
+            act_srv_->setPreempted(result_.result, " action cancelled by client.");
+            ROS_INFO_STREAM(
+                ros::this_node::getName()
+                << " "
+                << __func__
+                << " action cancelled by client."
             );
             break;
 

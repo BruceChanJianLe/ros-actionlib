@@ -18,7 +18,8 @@ namespace exp_server
         PREEMPTED,
         ABORTED,
         SUCCEEDED,
-        IDLE
+        IDLE,
+        CANCEL
     };
 
     class exp_server_gui : public rqt_gui_cpp::Plugin
