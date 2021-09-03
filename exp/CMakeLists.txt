@@ -40,7 +40,7 @@ add_dependencies(
   ${catkin_EXPORTED_TARGETS}
 )
 
-# exp server
+# exp client
 add_executable(
   exp_client_node
   src/exp_client_node.cpp
@@ -54,5 +54,22 @@ target_link_libraries(
 
 add_dependencies(
   exp_client_node
+  ${catkin_EXPORTED_TARGETS}
+)
+
+# exp client cancel
+add_executable(
+  exp_client_cancel_node
+  src/exp_client_cancel_node.cpp
+  src/exp_client_cancel.cpp
+)
+
+target_link_libraries(
+  exp_client_cancel_node
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(
+  exp_client_cancel_node
   ${catkin_EXPORTED_TARGETS}
 )
