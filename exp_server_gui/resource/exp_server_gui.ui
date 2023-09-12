@@ -52,24 +52,31 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QPushButton" name="buttonAborted">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="buttonSendGoal">
       <property name="text">
-       <string>Aborted</string>
+       <string>Send Goal</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="buttonCancelGoal">
+      <property name="text">
+       <string>Cancel Goal</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QPushButton" name="buttonSucceeded">
       <property name="text">
-       <string>Succeeded</string>
+       <string>Cancel All Goal</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="buttonPreempted">
+    <item row="3" column="0">
+     <widget class="QPushButton" name="buttonStopTrackingGoal">
       <property name="text">
-       <string>Preempted</string>
+       <string>Stop Tracking Goal</string>
       </property>
      </widget>
     </item>
