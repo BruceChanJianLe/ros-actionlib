@@ -67,7 +67,7 @@
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPushButton" name="buttonSucceeded">
+     <widget class="QPushButton" name="buttonCancelAllGoal">
       <property name="text">
        <string>Cancel All Goal</string>
       </property>
