@@ -7,8 +7,10 @@
 #include <exp_server_gui/ui_exp_server_gui.h>
 #include <QWidget>
 
-#include <exp_msgs/ExpAction.h>
-#include <actionlib/server/simple_action_server.h>
+#include <mbf_msgs/MoveBaseAction.h>
+#include <mbf_msgs/MoveBaseActionResult.h>
+#include <mbf_msgs/MoveBaseGoal.h>
+#include <actionlib/client/simple_action_client.h>
 #include <geometry_msgs/PoseStamped.h>
 
 namespace exp_server
@@ -42,17 +44,17 @@ namespace exp_server
 
         private:
             Ui::gui ui_;
-            QWidget * widget_;
+            QWidget* widget_;
 
         protected:
-            /// Action Server
-            std::shared_ptr<actionlib::SimpleActionServer<exp_msgs::ExpAction>> act_srv_;
+            /// Action Client
+            std::shared_ptr<actionlib::SimpleActionClient<mbf_msgs::MoveBaseAction>> act_client_;
 
             /// Feedback
-            exp_msgs::ExpActionFeedback feedback_;
+            mbf_msgs::MoveBaseFeedback feedback_;
 
             /// Result
-            exp_msgs::ExpActionResult result_;
+            mbf_msgs::MoveBaseResult result_;
 
             /// Name
             std::string name_;
@@ -61,20 +63,20 @@ namespace exp_server
             ros::NodeHandle relative_nh_;
             ros::NodeHandle private_nh_;
 
-            /// Action server callback
-            void actionServerCB(const exp_msgs::ExpGoalConstPtr &);
-
             /// Stop action server
             void stop();
 
             /// Current State
             serverState state_;
 
+            bool alternate_goals_;
+
         private Q_SLOTS:
             // Qt callback function
-            void buttonPreemptedCallback();
-            void buttonAbortedCallback();
-            void buttonSucceededCallback();
+            void buttonSendGoal();
+            void buttonCancelGoal();
+            void buttonCancelAllGoal();
+            void buttonStopTrackingGoal();
     };
 
 } // namespace exp_server

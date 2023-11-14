@@ -11,8 +11,9 @@ namespace exp_server
     :   rqt_gui_cpp::Plugin()
     ,   widget_(0)
     ,   state_(exp_server::serverState::IDLE)
+    ,   alternate_goals_{false}
     {
-        setObjectName("exp_server_gui");
+        setObjectName("mbf_client_gui");
     }
 
     exp_server_gui::~exp_server_gui()
@@ -36,23 +37,21 @@ namespace exp_server
 
         // Initialize ROS related things
         // Initialize action server
-        act_srv_ = std::make_shared<actionlib::SimpleActionServer<exp_msgs::ExpAction>> (
+        act_client_ = std::make_shared<actionlib::SimpleActionClient<mbf_msgs::MoveBaseAction>>(
             getNodeHandle(),
-            "/exp_server_node",
-            [this](const exp_msgs::ExpGoalConstPtr & goal)
-            {
-                this->actionServerCB(goal);
-            },
-            false
-        );
+            "/move_base_flex/move_base",
+            true);
 
         // Connect Qt Widget
-        connect(ui_.buttonPreempted, SIGNAL(pressed()), this, SLOT(buttonPreemptedCallback()));
-        connect(ui_.buttonAborted, SIGNAL(pressed()), this, SLOT(buttonAbortedCallback()));
-        connect(ui_.buttonSucceeded, SIGNAL(pressed()), this, SLOT(buttonSucceededCallback()));
+        connect(ui_.buttonSendGoal, SIGNAL(pressed()), this, SLOT(buttonSendGoal()));
+        connect(ui_.buttonCancelGoal, SIGNAL(pressed()), this, SLOT(buttonCancelGoal()));
+        connect(ui_.buttonCancelAllGoal, SIGNAL(pressed()), this, SLOT(buttonCancelAllGoal()));
+        connect(ui_.buttonStopTrackingGoal, SIGNAL(pressed()), this, SLOT(buttonStopTrackingGoal()));
 
         // Start action server
-        act_srv_->start();
+        ROS_INFO("Waiting for mbf action server...");
+        act_client_->waitForServer();
+        ROS_INFO("mbf action server has started");
     }
 
     void exp_server_gui::shutdownPlugin()
@@ -73,120 +72,86 @@ namespace exp_server
     {
     }
 
-    void exp_server_gui::actionServerCB(const exp_msgs::ExpGoalConstPtr & goal)
-    {
-        // Set status text
-        ui_.current_status->setText("   ACTIVE");
-
-        ROS_INFO_STREAM(
-            ros::this_node::getName() << " " << __func__ <<
-            " action server request has been received."
-        );
-
-        // Success flag
-        bool isok = false;
-
-        ros::Rate r(5);
-        // Carry out goal request
-        while(ros::ok())
-        {
-            if(!act_srv_->isPreemptRequested())
-            {
-                if(state_ != exp_server::serverState::IDLE)
-                    break;
-            }
-            else
-            {
-                state_ = exp_server::serverState::CANCEL;
-                ui_.current_status->setText("   CANCELLED BY CLIENT.");
-                break;
-            }
-            r.sleep();
-        }
-
-        switch (state_)
-        {
-        case exp_server::serverState::PREEMPTED:
-            act_srv_->setPreempted(result_.result, " action server state: PREEMPTED!");
-            ROS_WARN_STREAM(
-                ros::this_node::getName()
-                << " "
-                << __func__
-                << " server responded with PREEMPTED."
-            );
-            break;
-
-        case exp_server::serverState::ABORTED:
-            act_srv_->setAborted(result_.result, " action server state: PREEMPTED!");
-            ROS_ERROR_STREAM(
-                ros::this_node::getName()
-                << " "
-                << __func__
-                << " server responded with ABORTED."
-            );
-            break;
-
-        case exp_server::serverState::SUCCEEDED:
-            act_srv_->setSucceeded(result_.result, " action server state: SUCCEEDED!");
-            ROS_INFO_STREAM(
-                ros::this_node::getName()
-                << " "
-                << __func__
-                << " server responded with SUCCEEDED."
-            );
-            break;
-
-        case exp_server::serverState::CANCEL:
-            act_srv_->setPreempted(result_.result, " action cancelled by client.");
-            ROS_INFO_STREAM(
-                ros::this_node::getName()
-                << " "
-                << __func__
-                << " action cancelled by client."
-            );
-            break;
-
-        default:
-            act_srv_->setAborted(result_.result, " DEFAULT action server state: ABORTED!!!");
-            ROS_FATAL_STREAM(
-                ros::this_node::getName()
-                << " "
-                << __func__
-                << " server responded with ABORTED."
-            );
-            break;
-        }
-
-        // Reset State
-        state_ = exp_server::serverState::IDLE;
-
-        // Set status text
-        ui_.current_status->setText("     IDLE");
-    }
-
     void exp_server_gui::stop()
     {
-        act_srv_->shutdown();
         if (widget_ != nullptr)
             delete widget_;
     }
 
-    void exp_server_gui::buttonPreemptedCallback()
+    void exp_server_gui::buttonSendGoal()
     {
-        if(state_ == exp_server::serverState::IDLE)
-            state_ = exp_server::serverState::PREEMPTED;
+        mbf_msgs::MoveBaseGoal goal;
+        goal.controller = "modethree";
+        goal.planner = "modeone";
+        goal.target_pose.header.frame_id = "map";
+        goal.target_pose.header.stamp = ros::Time::now();
+        if (alternate_goals_)
+        {
+            goal.target_pose.pose.position.x = 5;
+            alternate_goals_ = !alternate_goals_;
+        }
+        else
+        {
+            goal.target_pose.pose.position.x = 0;
+            alternate_goals_ = !alternate_goals_;
+        }
+        goal.target_pose.pose.position.y = 0;
+        goal.target_pose.pose.position.z = 0;
+        goal.target_pose.pose.orientation.x = 0;
+        goal.target_pose.pose.orientation.y = 0;
+        goal.target_pose.pose.orientation.z = 0;
+        goal.target_pose.pose.orientation.w = 1;
+
+        {
+            actionlib::SimpleActionClient<mbf_msgs::MoveBaseAction> new_act_client(
+            getNodeHandle(),
+            "/move_base_flex/move_base",
+            true);
+            new_act_client.sendGoal(goal);
+        }
+        // act_client_->sendGoal(goal);
+
+        ROS_INFO_STREAM(
+            ros::this_node::getName()
+            << " "
+            << __func__
+            << " client has send goal with x: "
+            << goal.target_pose.pose.position.x
+            << "."
+        );
     }
 
-    void exp_server_gui::buttonAbortedCallback()
+    void exp_server_gui::buttonCancelGoal()
     {
-        if(state_ == exp_server::serverState::IDLE)
-            state_ = exp_server::serverState::ABORTED;
+        act_client_->cancelGoal();
+        ROS_INFO_STREAM(
+            ros::this_node::getName()
+            << " "
+            << __func__
+            << " client has cancelled the goal."
+        );
     }
 
-    void exp_server_gui::buttonSucceededCallback()
+    void exp_server_gui::buttonCancelAllGoal()
     {
-        if(state_ == exp_server::serverState::IDLE)
-            state_ = exp_server::serverState::SUCCEEDED;
+        act_client_->cancelAllGoals();
+        ROS_INFO_STREAM(
+            ros::this_node::getName()
+            << " "
+            << __func__
+            << " client has cancelled all the goals."
+        );
+    }
+
+    void exp_server_gui::buttonStopTrackingGoal()
+    {
+        act_client_->stopTrackingGoal();
+        ROS_INFO_STREAM(
+            ros::this_node::getName()
+            << " "
+            << __func__
+            << " client has stopped tracking the goal."
+        );
     }
 
 } // namespace exp_server
